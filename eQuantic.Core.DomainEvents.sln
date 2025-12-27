@@ -1,0 +1,47 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0CA2F610-6D57-4D1F-92E3-EDCCEDAD8297}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7227B10E-290D-419B-8279-D6E617711938}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F72DED29-7BF7-4870-81B4-7AFE91270530}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eQuantic.Core.DomainEvents", "src\eQuantic.Core.DomainEvents\eQuantic.Core.DomainEvents.csproj", "{E6F4238E-42A3-4A46-B03D-781A76AC919C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eQuantic.Core.DomainEvents.Tests", "tests\eQuantic.Core.DomainEvents.Tests\eQuantic.Core.DomainEvents.Tests.csproj", "{6788A9A8-7DB8-4B9E-8B00-B18D8FECAD8B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E6F4238E-42A3-4A46-B03D-781A76AC919C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6F4238E-42A3-4A46-B03D-781A76AC919C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6F4238E-42A3-4A46-B03D-781A76AC919C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6F4238E-42A3-4A46-B03D-781A76AC919C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6788A9A8-7DB8-4B9E-8B00-B18D8FECAD8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6788A9A8-7DB8-4B9E-8B00-B18D8FECAD8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6788A9A8-7DB8-4B9E-8B00-B18D8FECAD8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6788A9A8-7DB8-4B9E-8B00-B18D8FECAD8B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E6F4238E-42A3-4A46-B03D-781A76AC919C} = {0CA2F610-6D57-4D1F-92E3-EDCCEDAD8297}
+		{6788A9A8-7DB8-4B9E-8B00-B18D8FECAD8B} = {7227B10E-290D-419B-8279-D6E617711938}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0714A2C7-DE4E-4470-83D7-CBC22653FFD4}
+	EndGlobalSection
+EndGlobal
