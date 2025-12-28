@@ -1,6 +1,7 @@
 using eQuantic.Core.Eventing;
 using eQuantic.Core.Eventing.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace eQuantic.Core.DomainEvents.Extensions;
 
@@ -83,6 +84,20 @@ public class DomainEventsBuilder
     }
 
     /// <summary>
+    /// Configures external event subscription using the specified subscriber.
+    /// The subscriber will consume events from external message brokers and dispatch them to local handlers.
+    /// </summary>
+    /// <typeparam name="TSubscriber">The external subscriber type.</typeparam>
+    /// <returns>The builder for chaining.</returns>
+    public DomainEventsBuilder UseExternalSubscriber<TSubscriber>()
+        where TSubscriber : class, IExternalEventSubscriber
+    {
+        Services.AddSingleton<IExternalEventSubscriber, TSubscriber>();
+        Services.AddHostedService<DomainEventSubscriberHostedService>();
+        return this;
+    }
+
+    /// <summary>
     /// Registers a domain event handler.
     /// </summary>
     /// <typeparam name="TEvent">The domain event type.</typeparam>
@@ -94,5 +109,28 @@ public class DomainEventsBuilder
     {
         Services.AddDomainEventHandler<TEvent, THandler>();
         return this;
+    }
+}
+
+/// <summary>
+/// Hosted service that manages the domain event subscriber lifecycle.
+/// </summary>
+public class DomainEventSubscriberHostedService : IHostedService
+{
+    private readonly IExternalEventSubscriber _subscriber;
+
+    public DomainEventSubscriberHostedService(IExternalEventSubscriber subscriber)
+    {
+        _subscriber = subscriber;
+    }
+
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        return _subscriber.StartAsync(cancellationToken);
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return _subscriber.StopAsync(cancellationToken);
     }
 }
