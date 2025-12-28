@@ -17,14 +17,33 @@ public interface IDomainEventDispatcher : IEventDispatcher
 
 /// <summary>
 /// Domain event dispatcher implementation that uses the base InMemoryEventDispatcher.
+/// Optionally publishes events to external message brokers via IExternalEventPublisher.
 /// </summary>
 public class DomainEventDispatcher : IDomainEventDispatcher
 {
     private readonly IEventDispatcher _innerDispatcher;
+    private readonly IExternalEventPublisher? _externalPublisher;
 
+    /// <summary>
+    /// Creates a new DomainEventDispatcher with local dispatch only.
+    /// </summary>
+    /// <param name="innerDispatcher">The inner event dispatcher for local handlers.</param>
     public DomainEventDispatcher(IEventDispatcher innerDispatcher)
+        : this(innerDispatcher, null)
+    {
+    }
+
+    /// <summary>
+    /// Creates a new DomainEventDispatcher with optional external publishing.
+    /// </summary>
+    /// <param name="innerDispatcher">The inner event dispatcher for local handlers.</param>
+    /// <param name="externalPublisher">Optional external event publisher (Azure, AWS, RabbitMQ, etc.).</param>
+    public DomainEventDispatcher(
+        IEventDispatcher innerDispatcher,
+        IExternalEventPublisher? externalPublisher)
     {
         _innerDispatcher = innerDispatcher;
+        _externalPublisher = externalPublisher;
     }
 
     /// <inheritdoc />
@@ -45,8 +64,19 @@ public class DomainEventDispatcher : IDomainEventDispatcher
     {
         var events = aggregateRoot.GetUncommittedEvents();
         
-        // Use the collection-based dispatch which handles dynamic types correctly
+        if (!events.Any())
+        {
+            return;
+        }
+
+        // Dispatch to local handlers
         await _innerDispatcher.DispatchAsync(events, cancellationToken);
+        
+        // Publish to external message broker (if configured)
+        if (_externalPublisher != null)
+        {
+            await _externalPublisher.PublishAsync(events, cancellationToken);
+        }
         
         aggregateRoot.ClearUncommittedEvents();
     }

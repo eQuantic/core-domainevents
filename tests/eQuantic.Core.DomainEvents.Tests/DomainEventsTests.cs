@@ -417,7 +417,7 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddDomainEvents_ShouldReturnServiceCollection()
+    public void AddDomainEvents_ShouldReturnDomainEventsBuilder()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -426,7 +426,9 @@ public class ServiceCollectionExtensionsTests
         var result = services.AddDomainEvents();
 
         // Assert
-        result.Should().BeSameAs(services);
+        result.Should().NotBeNull();
+        result.Should().BeOfType<DomainEventsBuilder>();
+        result.Services.Should().BeSameAs(services);
     }
 
     [Fact]

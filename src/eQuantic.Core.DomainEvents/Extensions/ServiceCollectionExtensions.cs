@@ -14,8 +14,8 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="strategy">The dispatch strategy to use.</param>
-    /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddDomainEvents(
+    /// <returns>A builder for further configuration.</returns>
+    public static DomainEventsBuilder AddDomainEvents(
         this IServiceCollection services,
         EventDispatchStrategy strategy = EventDispatchStrategy.WhenAll)
     {
@@ -23,9 +23,14 @@ public static class ServiceCollectionExtensions
         services.AddEventDispatcher(strategy);
         
         // Add the domain event dispatcher wrapper
-        services.AddSingleton<IDomainEventDispatcher, DomainEventDispatcher>();
+        services.AddSingleton<IDomainEventDispatcher>(sp =>
+        {
+            var innerDispatcher = sp.GetRequiredService<IEventDispatcher>();
+            var externalPublisher = sp.GetService<IExternalEventPublisher>();
+            return new DomainEventDispatcher(innerDispatcher, externalPublisher);
+        });
         
-        return services;
+        return new DomainEventsBuilder(services);
     }
 
     /// <summary>
@@ -43,5 +48,51 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IDomainEventHandler<TEvent>, THandler>();
         services.AddTransient<IEventHandler<TEvent>, THandler>();
         return services;
+    }
+}
+
+/// <summary>
+/// Builder for configuring domain events.
+/// </summary>
+public class DomainEventsBuilder
+{
+    /// <summary>
+    /// Gets the service collection.
+    /// </summary>
+    public IServiceCollection Services { get; }
+
+    /// <summary>
+    /// Creates a new builder.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    public DomainEventsBuilder(IServiceCollection services)
+    {
+        Services = services;
+    }
+
+    /// <summary>
+    /// Configures external event publishing using the specified publisher.
+    /// </summary>
+    /// <typeparam name="TPublisher">The external publisher type.</typeparam>
+    /// <returns>The builder for chaining.</returns>
+    public DomainEventsBuilder UseExternalPublisher<TPublisher>()
+        where TPublisher : class, IExternalEventPublisher
+    {
+        Services.AddSingleton<IExternalEventPublisher, TPublisher>();
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a domain event handler.
+    /// </summary>
+    /// <typeparam name="TEvent">The domain event type.</typeparam>
+    /// <typeparam name="THandler">The handler type.</typeparam>
+    /// <returns>The builder for chaining.</returns>
+    public DomainEventsBuilder AddHandler<TEvent, THandler>()
+        where TEvent : IDomainEvent
+        where THandler : class, IDomainEventHandler<TEvent>
+    {
+        Services.AddDomainEventHandler<TEvent, THandler>();
+        return this;
     }
 }

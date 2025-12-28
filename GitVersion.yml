@@ -1,5 +1,4 @@
 mode: ContinuousDeployment
-next-version: 1.0.0
 major-version-bump-message: '\+semver:\s?(breaking|major)|^(feat|fix|perf)(\(.+\))?!:'
 minor-version-bump-message: '\+semver:\s?(feature|minor)|^feat(\(.+\))?:'
 patch-version-bump-message: '\+semver:\s?(fix|patch)|^(fix|perf|refactor|style|test|docs|chore)(\(.+\))?:'
